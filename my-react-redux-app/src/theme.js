@@ -7,7 +7,8 @@ const theme = {
     searchSuggest: "#F5F5F5 0% 0% no-repeat padding-box;",
   },
   color: {
-    primary: "#183573",
+    primary: "#3662db",
+    primaryHover:"#3662db",
     secondary: "#37B3B8",
     red: "#ff4d4d",
     lightRed: "#ff8080",

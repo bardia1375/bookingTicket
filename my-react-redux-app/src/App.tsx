@@ -9,10 +9,13 @@ import Navbar from "pages/Navbar/Navbar";
 import CalendarCard from "pages/CalendarCard/CalendarCard";
 import ImgCard from "pages/ImgCard/ImgCard";
 import Picture from "pages/Picture/Picture";
-import Filed from "./Components/common/Filed"
+// import Filed from "./Components/common/Filed"
 import { Card } from "Components/common/Card";
+import TicketsCard from "pages/Tickets/TicketsCard";
+import ReserveTicket from "pages/Tickets/ReserveTicket/ReserveTicket";
 const Container = styled.div`
-  @apply text-center p-8;
+  background:#0fd8c7;
+  height:100vh;
 `;
 
 const UserInfo = styled.div`
@@ -37,18 +40,20 @@ const App: React.FC = () => {
 
   return (
     <Container>
-      <Navbar />
-      <CalendarCard />
-      <ImgCard />
-      <Picture />
-      <ImgCard />
-      <Footer />
-      
+      {/* <Navbar /> */}
+       <CalendarCard />
+      <TicketsCard/> 
+      {/* <ReserveTicket/> */}
+      {/* <ImgCard /> */}
+      {/* <Picture /> */}
+      {/* <ImgCard /> */}
+      {/* <Footer /> */}
+{/*       
       <Card width="50%">
         <Filed placeholder="مبدا"/>
         <Filed placeholder="مبدا"/>
         <Filed placeholder="مبدا"/>
-      </Card>
+      </Card> */}
     </Container>
   );
 };

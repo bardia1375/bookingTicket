@@ -1,7 +1,7 @@
 // Import necessary modules
-import React, { ChangeEvent, FC, useState } from 'react';
-import styled from 'styled-components';
-import Location from 'assets/location.svg'; // Import the desired icon
+import React, { ChangeEvent, FC, useState } from "react";
+import styled from "styled-components";
+import Location from "assets/location.svg"; // Import the desired icon
 
 // Define the FieldProps interface for component props
 interface FieldProps {
@@ -24,7 +24,7 @@ interface FieldProps {
 }
 
 // Define the Field component
-const Field: FC<FieldProps> = ({
+export const Filed: FC<FieldProps> = ({
   autoFocus,
   onClick,
   onChange,
@@ -77,24 +77,23 @@ const InputContainer = styled.div`
 
 const IconContainer = styled.img`
   position: absolute;
-  bottom: 8px;
+  bottom: 12px;
   right: 10px;
   width: 20px;
   height: 20px;
 `;
 interface StyledInputProps {
   isFocused: boolean;
+  width: string|undefined;
 }
 
 export const Input = styled.input<StyledInputProps>`
   border-radius: 0.5rem;
-  border: 1px solid ${(props) => (props.isFocused ? 'orange' : '#727483')};
-  padding: 0.5rem 2rem;
+  border: 1px solid ${(props) => (props.isFocused ? "orange" : "#727483")};
+  padding: 0.8rem 2rem;
+  width: ${(props) => (props.width ? props.width : "100%")};
   &::placeholder {
     /* Add styles for the placeholder text */
-  font-size:1rem
+    font-size: 1rem;
   }
 `;
-
-// Export the Field component
-export default Field;
