@@ -3,8 +3,9 @@ import styled from "styled-components";
 interface ButtonType {
   color?: string;
   Text: string;
-  padding: string;
-  width: string;
+  padding?: string;
+  width?: string;
+  onClick: (e: any) => any;
 }
 export const Button = ({ color, Text, padding, width, onClick }) => {
   return (

@@ -2,6 +2,8 @@ import styled from "styled-components";
 
 export const Container = styled.div`
   display: flex;
+  align-items:center;
+  justify-content:center;
   gap: 8px;
 `;
 
@@ -124,4 +126,9 @@ export const TicketType = styled.div`
   color: #343b53;
   text-align: center;
   font-size: 0.8rem;
+`;
+export const SuccessMessages = styled.div`
+   display:flex;
+   align-items:center;
+   justify-content:center
 `;

@@ -21,7 +21,7 @@ const Modal = ({ children, isOpen, onClose }) => {
   return (
     <>
       {isModalOpen && (
-        <PrimaryModal>
+        <PrimaryModal isModalOpen>
           <Content>
             <CloseButton onClick={closeModal}>&times;</CloseButton>
             {children}
@@ -32,7 +32,7 @@ const Modal = ({ children, isOpen, onClose }) => {
   );
 };
 export default Modal;
-export const PrimaryModal = styled.div`
+export const PrimaryModal = styled.div<{ isModalOpen: boolean }>`
   position: fixed;
   top: 0;
   left: 0;
@@ -42,6 +42,8 @@ export const PrimaryModal = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  opacity: ${(props) => (props.isModalOpen ? 1 : 0)};
+  transition: 1s  all;
 `;
 export const Content = styled.div`
   background: #fffafa;

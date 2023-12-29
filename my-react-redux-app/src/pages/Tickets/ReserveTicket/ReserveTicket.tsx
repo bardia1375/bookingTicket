@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { ChangeEvent, useEffect, useReducer, useState } from "react";
 import styled from "styled-components";
 import {
   Container,
@@ -15,14 +15,207 @@ import {
   Seat,
   SeatContain,
   SeatMain,
+  SuccessMessages,
 } from "./Styles";
 import { Card, Filed, Button } from "../../../Components/common";
 import Logo from "assets/tk.webp";
 import AirLinePng from "assets/AirLine.png";
 import Modal from "Components/common/Modal";
 import SeatContainer from "./SeatContainer";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  getFirestore,
+  setDoc,
+  updateDoc,
+} from "firebase/firestore";
+import { db } from "../../../firebase-config";
+import { isAction } from "redux";
+import { useNavigate } from "react-router-dom";
+import { numberWithCommasAndPersian } from "Components/common/numberToPersian";
+
+interface State {
+  name: string;
+  family: string;
+  passNo: string;
+  personNo: string;
+  positions: string[];
+  GetAll: number;
+}
+
+const initialState: State = {
+  name: "",
+  family: "",
+  passNo: "",
+  personNo: "",
+  positions: [],
+  GetAll: 0,
+};
+const reducerConfig = (state: State, action: any): State => {
+  console.log("action", action);
+
+  switch (action.type) {
+    case "UPDATE_FIELD":
+      return { ...state, [action.field]: action.value };
+      break;
+    case "SeatsPosition":
+      return { ...state, positions: action.positions };
+      break;
+    case "GET_ALL":
+      return { ...state, GetAll: action.GetAll };
+      break;
+    default:
+      return state;
+      break;
+  }
+};
 
 const ReserveTicket: React.FC = () => {
+  const [seatBookingLeft, setSeatBookingLeft] = useState<any>([]);
+  const [seatBookingRight, setSeatBookingRight] = useState<any>([]);
+  const [success, setSuccess] = useState<boolean>(false);
+  const navigate = useNavigate();
+  const [parsedPrice, setParsedPrice] = useState<number>(0);
+  const [information, dispatch] = useReducer(
+    reducerConfig,
+    initialState as State
+  );
+  const Price = localStorage.getItem("Price");
+  useEffect(() => {
+    setParsedPrice(Price !== null ? parseInt(Price, 10) : 0);
+  }, [Price]);
+  // useEffect(() => {
+  //   const initializeSeats = async () => {
+  //     for (let i = 8; i >= 5; i--) {
+  //       await setDoc(doc(db, "seatBookingRight", `J${i}`), {
+  //         id: `J${i}`,
+  //         seatNumber: `J${i}`,
+  //         price: 20000000,
+  //         State: "empty",
+  //         PassNo: information.passNo,
+  //         family: information.family,
+  //         name: information.name,
+  //         personNo: information.personNo,
+  //       });
+  //       await setDoc(doc(db, "seatBookingRight", `I${i}`), {
+  //         id: `I${i}`,
+  //         seatNumber: `I${i}`,
+  //         price: 20000000,
+  //         State: "empty",
+  //         PassNo: information.passNo,
+  //         family: information.family,
+  //         name: information.name,
+  //         personNo: information.personNo,
+  //       });
+  //       await setDoc(doc(db, "seatBookingRight", `H${i}`), {
+  //         id: `H${i}`,
+  //         seatNumber: `H${i}`,
+  //         price: 20000000,
+  //         State: "empty",
+  //         PassNo: information.passNo,
+  //         family: information.family,
+  //         name: information.name,
+  //         personNo: information.personNo,
+  //       });
+  //       await setDoc(doc(db, "seatBookingRight", `G${i}`), {
+  //         id: `G${i}`,
+  //         seatNumber: `G${i}`,
+  //         price: 20000000,
+  //         State: "empty",
+  //         PassNo: information.passNo,
+  //         family: information.family,
+  //         name: information.name,
+  //         personNo: information.personNo,
+  //       });
+  //       await setDoc(doc(db, "seatBookingRight", `F${i}`), {
+  //         id: `F${i}`,
+  //         seatNumber: `F${i}`,
+  //         price: 20000000,
+  //         State: "empty",
+  //         PassNo: information.passNo,
+  //         family: information.family,
+  //         name: information.name,
+  //         personNo: information.personNo,
+  //       });
+  //       await setDoc(doc(db, "seatBookingRight", `E${i}`), {
+  //         id: `E${i}`,
+  //         seatNumber: `E${i}`,
+  //         price: 20000000,
+  //         State: "empty",
+  //         PassNo: information.passNo,
+  //         family: information.family,
+  //         name: information.name,
+  //         personNo: information.personNo,
+  //       });
+  //       await setDoc(doc(db, "seatBookingRight", `D${i}`), {
+  //         id: `D${i}`,
+  //         seatNumber: `D${i}`,
+  //         price: 20000000,
+  //         State: "empty",
+  //         PassNo: information.passNo,
+  //         family: information.family,
+  //         name: information.name,
+  //         personNo: information.personNo,
+  //       });
+  //       await setDoc(doc(db, "seatBookingRight", `C${i}`), {
+  //         id: `C${i}`,
+  //         seatNumber: `C${i}`,
+  //         price: 20000000,
+  //         State: "empty",
+  //         PassNo: information.passNo,
+  //         family: information.family,
+  //         name: information.name,
+  //         personNo: information.personNo,
+  //       });
+  //       await setDoc(doc(db, "seatBookingRight", `B${i}`), {
+  //         id: `B${i}`,
+  //         seatNumber: `B${i}`,
+  //         price: 20000000,
+  //         State: "empty",
+  //         PassNo: information.passNo,
+  //         family: information.family,
+  //         name: information.name,
+  //         personNo: information.personNo,
+  //       });
+  //       await setDoc(doc(db, "seatBookingRight", `A${i}`), {
+  //         id: `A${i}`,
+  //         seatNumber: `A${i}`,
+  //         price: 20000000,
+  //         State: "empty",
+  //         PassNo: information.passNo,
+  //         family: information.family,
+  //         name: information.name,
+  //         personNo: information.personNo,
+  //       });
+  //     }
+  //   };
+  //   initializeSeats();
+  // }, []);
+
+  useEffect(() => {
+    console.log("salam");
+
+    const initializeSeats = async () => {
+      const seatBookingRightSnapshot = await getDocs(
+        collection(db, "seatBookingRight")
+      );
+      const seatBookingLeftSnapshot = await getDocs(
+        collection(db, "seatBookingLeft")
+      );
+      const seatData = seatBookingRightSnapshot.docs.map((doc) => doc.data());
+      const seatData2 = seatBookingLeftSnapshot.docs.map((doc) => doc.data());
+
+      console.log("Retrieved Seat Data1:", seatData);
+      console.log("Retrieved Seat Data2:", seatData2);
+
+      setSeatBookingRight(seatData);
+      setSeatBookingLeft(seatData2);
+    };
+    initializeSeats();
+  }, [information.GetAll]);
+
   const tiketsList = [
     {
       Logo: Logo,
@@ -57,7 +250,49 @@ const ReserveTicket: React.FC = () => {
       TicketType: "بیزینس",
     },
   ]);
+  const updateDate = async (el, newState) => {
+    console.log("updateDateupdateDate", el);
 
+    for (let index = 0; index < el.length; index++) {
+      if (
+        el[index].includes("1") ||
+        el[index].includes("2") ||
+        el[index].includes("3") ||
+        el[index].includes("4")
+      ) {
+        const seatDocRef = doc(db, "seatBookingLeft", el[index]);
+        console.log("el[index]", el[index]);
+        await updateDoc(seatDocRef, {
+          State: newState,
+          PassNo: information.passNo,
+          family: information.family,
+          name: information.name,
+          personNo: information.personNo,
+        });
+      } else {
+        const seatDocRef = doc(db, "seatBookingRight", el[index]);
+        console.log("el[index]", el[index]);
+        await updateDoc(seatDocRef, {
+          State: newState,
+          PassNo: information.passNo,
+          family: information.family,
+          name: information.name,
+          personNo: information.personNo,
+        });
+      }
+    }
+  };
+  const successMessage = () => {
+    setSuccess(true);
+    setModalOpen(true);
+    updateDate(information.positions, "Bought");
+    setTimeout(() => {
+      navigate("MyOrders");
+    }, 3000);
+  };
+  const ReservedTicket = () => {
+    setModalOpen(false);
+  };
   const [isModalOpen, setModalOpen] = useState(false);
 
   const openModal = () => {
@@ -73,76 +308,6 @@ const ReserveTicket: React.FC = () => {
     price: number;
   }
 
-  const numbersArray: seatType[] = [
-    {
-      id: "1",
-      seatNumber: "D",
-      price: 10000000,
-    },
-    {
-      id: "2",
-      seatNumber: "C",
-      price: 10000000,
-    },
-    {
-      id: "3",
-      seatNumber: "B",
-      price: 10000000,
-    },
-    {
-      id: "4",
-      seatNumber: "A",
-      price: 10000000,
-    },
-    // {
-    //   id: "5",
-    //   seatNumber: "H2",
-    // },
-    // {
-    //   id: "6",
-    //   seatNumber: "G2",
-    // },
-    // {
-    //   id: "7",
-    //   seatNumber: "F2",
-    // },
-    // {
-    //   id: "8",
-    //   seatNumber: "E2",
-    // },
-    // {
-    //   id: "9",
-    //   seatNumber: "D3",
-    // },
-    // {
-    //   id: "10",
-    //   seatNumber: "C3",
-    // },
-    // {
-    //   id: "11",
-    //   seatNumber: "B3",
-    // },
-    // {
-    //   id: "12",
-    //   seatNumber: "A3",
-    // },
-    // {
-    //   id: "13",
-    //   seatNumber: "D4",
-    // },
-    // {
-    //   id: "14",
-    //   seatNumber: "C4",
-    // },
-    // {
-    //   id: "15",
-    //   seatNumber: "B4",
-    // },
-    // {
-    //   id: "16",
-    //   seatNumber: "A4",
-    // },
-  ];
   const left: seatType[] = [
     {
       id: "5",
@@ -165,34 +330,102 @@ const ReserveTicket: React.FC = () => {
       price: 10000000,
     },
   ];
-  console.log(numbersArray); // [0, 1, 2, ..., 20]
-  const numbersArraySeat = [...Array(10).keys()];
   const [change, setChange] = useState("red");
-  const changeColor = (index, row, col) => {
-    console.log("status", col + (row + 1));
+
+  const onChange = (e: ChangeEvent<HTMLInputElement>) => {
+    dispatch({
+      type: "UPDATE_FIELD",
+      value: e.target.value,
+      field: e.target.name,
+    });
   };
+
+  const getSeatPosition = (el: string) => {
+    console.log("dfghjkl", el);
+    const updateSeatState = async (id, newState) => {
+      if (
+        id.includes("1") ||
+        id.includes("2") ||
+        id.includes("3") ||
+        id.includes("4")
+      ) {
+        const seatDocRef = doc(db, "seatBookingLeft", id);
+        // Update the state field for the specified document
+        await updateDoc(seatDocRef, {
+          State: newState,
+        }).then(async () => {
+          dispatch({
+            type: "GET_ALL",
+            GetAll: id,
+          });
+        });
+      } else {
+        const seatDocRef = doc(db, "seatBookingRight", id);
+        // Update the state field for the specified document
+        await updateDoc(seatDocRef, {
+          State: newState,
+        }).then(async () => {
+          dispatch({
+            type: "GET_ALL",
+            GetAll: id,
+          });
+        });
+      }
+
+      console.log(`State of seat ${id} updated to ${newState}`);
+      dispatch({
+        type: "SeatsPosition",
+        positions: [...information.positions, id],
+      });
+    };
+
+    updateSeatState(el, "Reserved");
+  };
+  console.log("informationposition", information.positions.length);
+
   return (
     <div>
       <Container>
         <div>
           {tiketsList.map((el) => (
-            <Card width="60vw" Title="اطلاعات مسافر اصلی">
+            <Card width="65vw" Title="اطلاعات مسافر اصلی">
               <Main>
                 <RightItems>
                   <Col>
                     <Row>
-                      <Filed placeholder="نام لاتین" width="25vw" />
+                      <Filed
+                        placeholder="نام لاتین"
+                        width="25vw"
+                        value={information.name}
+                        onChange={onChange}
+                        name="name"
+                      />
                       <Filed
                         placeholder="نام خانوادگی لاتین"
                         width="25vw"
+                        value={information.family}
+                        onChange={onChange}
+                        name="family"
                       />{" "}
                     </Row>
                     <Row>
-                      <Filed placeholder="شماره پاسپورت" width="25vw" />
-                      <Filed placeholder="کد ملی" width="25vw" />
+                      <Filed
+                        placeholder="شماره پاسپورت"
+                        width="25vw"
+                        value={information.passNo}
+                        onChange={onChange}
+                        name="passNo"
+                      />
+                      <Filed
+                        placeholder="کد ملی"
+                        width="25vw"
+                        value={information.personNo}
+                        onChange={onChange}
+                        name="personNo"
+                      />
                     </Row>
                   </Col>
-                  <Button Text="انتخاب مکان" onClick={openModal} />
+                  <Button Text="انتخاب" onClick={openModal} />
                 </RightItems>
               </Main>
             </Card>
@@ -203,61 +436,114 @@ const ReserveTicket: React.FC = () => {
             <Card width="30vw" Title="صورتحساب">
               <PayoutMain>
                 <Items>
-                  <div>بزرگسال</div>
-                  <div>{price}</div>
+                  <div>قیمت برای هر بزرگسال:</div>
+                  <div>{numberWithCommasAndPersian(parsedPrice)}ریال</div>
                 </Items>
                 <Items>
-                  <div>مالیات خدمات</div>
-                  <div>{(price * 9) / 100}</div>
+                  <div>مالیات خدمات:</div>
+                  <div>
+                    {numberWithCommasAndPersian((parsedPrice * 9) / 100)}
+                  </div>
                 </Items>
                 <Items>
-                  <div>مبلغ قابل پرداخت</div>
-                  <div>{price + (price * 9) / 100} ریال</div>
+                  <div>
+                    مبلغ قابل پرداخت:{information.positions.length + 1}نفر
+                  </div>
+                  <div>
+                    {numberWithCommasAndPersian(
+                      parsedPrice * (information.positions.length + 1) +
+                        (parsedPrice * 9) / 100
+                    )}{" "}
+                    ریال
+                  </div>
                 </Items>
               </PayoutMain>
-              <Button Text="پرداخت" padding="8px 4px" />
+              <Button
+                Text="پرداخت"
+                padding="8px 4px"
+                onClick={successMessage}
+              />
             </Card>
           ))}
         </div>
       </Container>
-      <Modal onClose={closeModal} isOpen={isModalOpen}>
-        <div>
-          <Card width="30vw" Title="رزرو صندلی">
-            {numbersArraySeat.map((mainItem, rowIndex) => (
+      {!success ? (
+        <Modal onClose={closeModal} isOpen={isModalOpen}>
+          <div>
+            <Card width="30vw" Title="رزرو صندلی">
               <SeatContain>
-                <div style={{ display: "flex", gap: "8px" }}>
-                  {left.map((item, columnIndex) => (
+                <div
+                  style={{
+                    display: "grid",
+                    gap: "8px",
+                    gridTemplateColumns: "repeat(4,1fr)",
+                    direction: "ltr",
+                  }}
+                >
+                  {seatBookingRight.map((item, columnIndex) => (
                     <SeatContainer
                       change={change === "blue"} // Change this condition based on your logic
                       columnIndex={columnIndex}
                       item={item}
-                      rowIndex={rowIndex}
-                      mainItem={mainItem}
+                      rowIndex={0}
+                      mainItem={0}
                       price={price}
                       setPrice={setPrice} // Pass setPriceList here
+                      getSeatPosition={getSeatPosition}
                     />
                   ))}
                 </div>
-                <div style={{ display: "flex", gap: "8px" }}>
-                  {numbersArray.map((item, columnIndex) => (
+                <div
+                  style={{
+                    display: "grid",
+                    gap: "8px",
+                    gridTemplateColumns: "repeat(4,1fr)",
+                    direction: "ltr",
+                  }}
+                >
+                  {seatBookingLeft.map((item, columnIndex) => (
                     <SeatContainer
                       change={change === "blue"} // Change this condition based on your logic
                       columnIndex={columnIndex}
                       item={item}
-                      mainItem={mainItem}
-                      rowIndex={rowIndex}
+                      rowIndex={0}
+                      mainItem={0}
                       price={price}
                       setPrice={setPrice} // Pass setPriceList here
+                      getSeatPosition={getSeatPosition}
                     />
                   ))}
                 </div>
               </SeatContain>
-            ))}
 
-            <Button Text="پرداخت" padding="8px 4px" />
-          </Card>
-        </div>
-      </Modal>
+              <Button Text="تایید" padding="8px 4px" onClick={ReservedTicket} />
+            </Card>
+          </div>
+        </Modal>
+      ) : (
+        <Modal onClose={closeModal} isOpen={isModalOpen}>
+          <div>
+            <Card width="30vw" Title="رزرو صندلی">
+              <SuccessMessages>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "8px",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <div>پرداخت شما با موفقیت انجام شد!</div>
+                  <p style={{ color: "red" }}>
+                    در حال انتقال به صفحه سفارش های من...
+                  </p>
+                </div>
+              </SuccessMessages>
+            </Card>
+          </div>
+        </Modal>
+      )}
     </div>
   );
 };

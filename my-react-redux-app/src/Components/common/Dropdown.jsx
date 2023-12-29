@@ -224,7 +224,8 @@ const SelectDropdown = styled.div`
           flex-direction: column;
           min-width: 120px;
           width: 100%;
-          max-height: 200px;
+          height: "200px";
+          transition:2s all;
           overflow-y: auto;
           border: 1px solid
             ${({ color, theme }) =>

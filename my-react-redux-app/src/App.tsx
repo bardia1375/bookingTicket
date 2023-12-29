@@ -13,9 +13,16 @@ import Picture from "pages/Picture/Picture";
 import { Card } from "Components/common/Card";
 import TicketsCard from "pages/Tickets/TicketsCard";
 import ReserveTicket from "pages/Tickets/ReserveTicket/ReserveTicket";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import MainPage from "pages/MainPage";
+import Myorders from "pages/Myorders/Myorders";
+
 const Container = styled.div`
-  background:#0fd8c7;
-  height:100vh;
+  height: auto;
+  padding: 32px 12vw;
+  /* display:flex; */
+  align-items: center;
+  justify-content: center;
 `;
 
 const UserInfo = styled.div`
@@ -39,22 +46,34 @@ const App: React.FC = () => {
   }, [dispatch]);
 
   return (
-    <Container>
-      {/* <Navbar /> */}
-       <CalendarCard />
-      <TicketsCard/> 
-      {/* <ReserveTicket/> */}
-      {/* <ImgCard /> */}
-      {/* <Picture /> */}
-      {/* <ImgCard /> */}
-      {/* <Footer /> */}
-{/*       
+    <Router>
+      <Routes>
+        <Route path="/" element={<MainPage />}>
+          <Route path="/TicketsCard" element={<TicketsCard />} />
+        </Route>
+        <Route path="/TicketsCard/ReserveTicket" element={<ReserveTicket />} />
+        <Route path="/MyOrders" element={<Myorders />} />
+        <Route
+          path="/TicketsCard/ReserveTicket/MyOrders"
+          element={<Myorders />}
+        ></Route>
+        {/* <Navbar /> */}
+        {/* <CalendarCard /> */}
+        {/* <Route path="/tickets" element={<CalendarCard />} /> */}
+        {/* <TicketsCard /> */}
+        {/* <ReserveTicket /> */}
+        {/* <ImgCard /> */}
+        {/* <Picture /> */}
+        {/* <ImgCard /> */}
+        {/* <Footer /> */}
+        {/*       
       <Card width="50%">
         <Filed placeholder="مبدا"/>
         <Filed placeholder="مبدا"/>
         <Filed placeholder="مبدا"/>
       </Card> */}
-    </Container>
+      </Routes>
+    </Router>
   );
 };
 
